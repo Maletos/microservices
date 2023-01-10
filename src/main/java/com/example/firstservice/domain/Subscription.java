@@ -15,7 +15,8 @@ import org.hibernate.annotations.SQLDelete;
 @SQLDelete(sql = "UPDATE subscriptions SET active = false WHERE id=?")
 @FilterDef(name = "deletedUserFilter", parameters = @ParamDef(name = "isActive", type = Boolean.class))
 @Filter(name = "deletedUserFilter", condition = "active = :isActive")
-public class Subscriptions {
+@Table(name = "subscriptions")
+public class Subscription {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "subs_generator")
     @SequenceGenerator(name="subs_generator", sequenceName = "subs_seq", allocationSize=1)
