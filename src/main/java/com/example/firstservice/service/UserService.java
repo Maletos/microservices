@@ -4,7 +4,6 @@ import com.example.firstservice.domain.User;
 import com.example.firstservice.repos.UserRepo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -13,17 +12,20 @@ import java.util.List;
 
 @Service
 public class UserService {
-    @Autowired
     private UserRepo userRepo;
     private static final Logger LOG = LogManager.getLogger(UserService.class);
+
+    public UserService (UserRepo userRepo) {
+        this.userRepo = userRepo;
+    }
 
     public String createUser(User user) {
         if (userRepo.findByUserName(user.getUserName()) != null) {
             return String.format("User with userName: %s already exists in the database", user.getUserName());
         }
         user.setActive(true);
-        userRepo.save(user);
-        return String.format("User with userName: %s has been saved in the database with id %s", user.getUserName(), user.getId());
+        User savedUser = userRepo.save(user);
+        return String.format("User with userName: %s has been saved in the database with id %s", savedUser.getUserName(), savedUser.getId());
     }
 
     public String deleteUser(Long id) {

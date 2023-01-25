@@ -16,10 +16,13 @@ import java.util.List;
 
 @Service
 public class SubscriptionService {
-    @Autowired
-    SubscriptionRepo subsRepo;
-    @Autowired
-    UserRepo userRepo;
+    private SubscriptionRepo subsRepo;
+    private UserRepo userRepo;
+
+    public SubscriptionService (SubscriptionRepo subsRepo, UserRepo userRepo) {
+        this.subsRepo = subsRepo;
+        this.userRepo = userRepo;
+    }
     private static final Logger LOG = LogManager.getLogger(SubscriptionService.class);
 
     public String createSubscription(String followerUserName, String followedUserName) {
