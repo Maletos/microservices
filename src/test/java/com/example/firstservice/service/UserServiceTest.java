@@ -6,22 +6,18 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.server.ResponseStatusException;
-
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 public class UserServiceTest {
 
     private UserRepo userRepo;
     private UserService userService;
+
     @BeforeEach
     public void init() {
         userRepo = Mockito.mock(UserRepo.class);
@@ -155,7 +151,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void etUserByIdNegative() {
+    public void getUserByIdNegative() {
         User user_1 = new User();
         user_1.setUserName("MikhailJ");
         user_1.setFirstName("Mikhail");
@@ -165,7 +161,7 @@ public class UserServiceTest {
         user_1.setPhoneNumber("2223344555");
         user_1.setId(1L);
 
-        Mockito.when(userRepo.findById(user_1.getId())).thenReturn(Optional.ofNullable(null));
+        Mockito.when(userRepo.existsById(user_1.getId())).thenReturn(false);
 
         Executable executable = () -> userService.getUser(user_1.getId());
 

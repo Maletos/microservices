@@ -6,7 +6,6 @@ import com.example.firstservice.repos.SubscriptionRepo;
 import com.example.firstservice.repos.UserRepo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -45,8 +44,29 @@ public class SubscriptionService {
         subscription.setFollower(followerUser);
         subscription.setFollowed(followedUser);
         subscription.setActive(true);
-        subsRepo.save(subscription);
+        Subscription savedSubscription = subsRepo.save(subscription);
         return String.format("Subscription for follower user: %s and followed user: %s has been saved in the database with id %s", followerUserName, followedUserName, subscription.getId());
+    }
+
+    public String createSubscription(Subscription subscription) {
+        User followerUser = userRepo.findByUserName(subscription.getFollower().getUserName());
+        User followedUser = userRepo.findByUserName(subscription.getFollowed().getUserName());
+        if (followerUser == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Follower user not found: ", subscription.getFollower().getUserName());
+            }
+            return String.format("User with userName: %s not found in the database", subscription.getFollower().getUserName());
+        }
+        if (followedUser == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Followed user not found: ", subscription.getFollowed().getUserName());
+            }
+            return String.format("User with userName: %s not found in the database", subscription.getFollowed().getUserName());
+        }
+        subscription.setActive(true);
+        Subscription savedSubscription = subsRepo.save(subscription);
+        return String.format("Subscription for follower user: %s and followed user: %s has been saved in the database with id %s",
+                savedSubscription.getFollower().getUserName(), savedSubscription.getFollowed().getUserName(), savedSubscription.getId());
     }
 
     public String deleteSubscription(Long id) {
