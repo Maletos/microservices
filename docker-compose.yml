@@ -1,0 +1,25 @@
+version: '1'
+services:
+    my-web-app-db:
+      image: postgres:14
+      ports:
+        - "5001:5432"
+      volumes:
+        - "/d/docker/postgres-data:/var/lib/postgesql/data"
+      environment:
+        - POSTGRES_DB=users
+        - POSTGRES_USER=myuser
+        - POSTGRES_PASSWORD=mypass
+      restart: unless-stopped
+    my-web-app:
+      build: .
+      ports:
+        - "8080:8080"
+      environment:
+        - SPRING_DATASOURCE_URL=jdbc:postgresql://my-web-app-db:5432/users
+        - SPRING_DATASOURCE_USERNAME=myuser
+        - SPRING_DATASOURCE_PASSWORD=mypass
+        - SPRING_JPA_HIBERNATE_DDL_AUTO=none
+      restart: unless-stopped
+      depends_on:
+        - my-web-app-db
