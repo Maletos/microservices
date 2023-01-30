@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: db/changelog/changesets/V1_createSchema.sql
+  - include:
+      file: db/changelog/changesets/V2_createTables.sql

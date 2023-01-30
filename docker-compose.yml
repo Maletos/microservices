@@ -4,8 +4,6 @@ services:
       image: postgres:14
       ports:
         - "5001:5432"
-      volumes:
-        - "/d/docker/postgres-data:/var/lib/postgesql/data"
       environment:
         - POSTGRES_DB=users
         - POSTGRES_USER=myuser
@@ -20,6 +18,9 @@ services:
         - SPRING_DATASOURCE_USERNAME=myuser
         - SPRING_DATASOURCE_PASSWORD=mypass
         - SPRING_JPA_HIBERNATE_DDL_AUTO=none
+        - SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA=users_schema
+        - SPRING_LIQUIBASE_DEFAULT_SCHEMA=users_schema
+        - SPRING_LIQUIBASE_LIQUIBASE_SCHEMA=public
       restart: unless-stopped
       depends_on:
         - my-web-app-db
