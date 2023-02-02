@@ -14,12 +14,17 @@ public class SubscriptionController {
     @Autowired
     SubscriptionService subscriptionService;
 
-    @PostMapping("subscribe")
+    @PostMapping("subscribe/v1")
     @Operation(summary = "Create subscription for user on another user")
-    public String createUser(@RequestParam String followerUserName, @RequestParam String followedUserName) {
+    public String createSubscription(@RequestParam String followerUserName, @RequestParam String followedUserName) {
         return subscriptionService.createSubscription(followerUserName, followedUserName);
     }
 
+    @PostMapping("subscribe/v2")
+    @Operation(summary = "Create subscription for user on another user")
+    public String createSubscription(@RequestBody Subscription subscription) {
+        return subscriptionService.createSubscription(subscription);
+    }
 
     @GetMapping("/getUserSubscriptions")
     @Operation(summary = "Create subscription for user on another user")

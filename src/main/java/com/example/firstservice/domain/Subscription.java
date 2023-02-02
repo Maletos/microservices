@@ -13,18 +13,18 @@ import org.hibernate.annotations.SQLDelete;
 @NoArgsConstructor
 @AllArgsConstructor
 @SQLDelete(sql = "UPDATE subscriptions SET active = false WHERE id=?")
-@FilterDef(name = "deletedUserFilter", parameters = @ParamDef(name = "isActive", type = Boolean.class))
-@Filter(name = "deletedUserFilter", condition = "active = :isActive")
+@FilterDef(name = "deletedSubsFilter", parameters = @ParamDef(name = "isActive", type = Boolean.class))
+@Filter(name = "deletedSubsFilter", condition = "active = :isActive")
 @Table(name = "subscriptions")
 public class Subscription {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "subs_generator")
     @SequenceGenerator(name="subs_generator", sequenceName = "subs_seq", allocationSize=1)
-    Long id;
-    @ManyToOne(fetch = FetchType.EAGER)
+    private Long id;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "follower_id")
     private User follower;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "followed_id")
     private User followed;
     private boolean active = Boolean.TRUE;

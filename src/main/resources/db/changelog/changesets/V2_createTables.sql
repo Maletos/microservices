@@ -57,8 +57,8 @@ create table if not exists users_schema.subscriptions (
 	active boolean,
 	constraint "subscriptions_pk" primary key (id),
 	unique (follower_id,followed_id),
-	constraint companies_fk foreign key (follower_id) REFERENCES users_schema.users(id) on delete cascade,
-	constraint caddresses_fk foreign key (followed_id) REFERENCES users_schema.users(id) on delete cascade
+	constraint follower_fk foreign key (follower_id) REFERENCES users_schema.users(id) on delete cascade,
+	constraint followed_fk foreign key (followed_id) REFERENCES users_schema.users(id) on delete cascade
 );
 CREATE unique index if not exists subscriptions_unq_idx ON users_schema.subscriptions(follower_id,followed_id);
 
@@ -71,6 +71,6 @@ create table if not exists users_schema.messages (
 	user_id int8,
 	constraint "messages_pk" primary key (id),
 	unique (message_date,title,user_id),
-	constraint companies_fk foreign key (user_id) REFERENCES users_schema.users(id) on delete cascade
+	constraint messages_fk foreign key (user_id) REFERENCES users_schema.users(id) on delete cascade
 );
 CREATE unique index if not exists messages_unq_idx ON users_schema.messages(message_date,title,user_id);

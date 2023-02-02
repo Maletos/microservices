@@ -1,7 +1,9 @@
 package com.example.firstservice.controller;
 
 import org.hamcrest.Matchers;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,10 +12,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -26,7 +28,6 @@ import org.springframework.web.context.WebApplicationContext;
 class UserControllerTest extends AbstractTransactionalJUnit4SpringContextTests {
     @Autowired
     private WebApplicationContext webContext;
-    private EmbeddedDatabase usersDB;
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private MockMvc mockMvc;
@@ -70,11 +71,63 @@ class UserControllerTest extends AbstractTransactionalJUnit4SpringContextTests {
     }
 
     @Test
+    void getUserNegative() throws Exception {
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get("/user/getUser/{id}", 1)
+                .accept(MediaType.APPLICATION_JSON));
+
+        resultActions.andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
     void getUserList() throws Exception {
         createUser();
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .get("/user/getUserList")
                 .accept(MediaType.APPLICATION_JSON));
-        resultActions.andDo(MockMvcResultHandlers.print());
+        MvcResult result = resultActions.andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print()).andReturn();
+        String content = result.getResponse().getContentAsString();
+        JSONArray usersArray = new JSONArray(content);
+        Assertions.assertEquals(1, usersArray.length());
+    }
+
+    @Test
+    void deleteUser() throws Exception {
+        createUser();
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .delete("/user/deleteUser/{id}", 1)
+                .accept(MediaType.APPLICATION_JSON));
+        resultActions.andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.equalTo("User with user id: 1 has been deleted from the database")));
+    }
+
+    @Test
+    void deleteUserNegative() throws Exception {
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .delete("/user/deleteUser/{id}", 1)
+                .accept(MediaType.APPLICATION_JSON));
+        resultActions.andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    void updateUser() throws Exception {
+        createUser();
+        JSONObject request = new JSONObject();
+        request.put("userName","VasyaM");
+        request.put("emailAddress", "dummy@elogex.com");
+        request.put("firstName", "Vasya");
+        request.put("secondName", "Petrovich");
+        request.put("lastName", "Myslov");
+        request.put("password", "test");
+        request.put("gender", "man");
+        request.put("phoneNumber", "3334445556");
+
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+            .put("/user/putUser/{id}", 1)
+            .content(request.toString())
+            .contentType(MediaType.APPLICATION_JSON));
+        resultActions.andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.equalTo("User with userName: VasyaM has been updated")));
     }
 }

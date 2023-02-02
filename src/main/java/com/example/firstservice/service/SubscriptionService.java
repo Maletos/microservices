@@ -74,7 +74,7 @@ public class SubscriptionService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         subsRepo.deleteById(id);
-        return String.format("User with user id: %s has been deleted from the database", id);
+        return String.format("Subscription with user id: %s has been deleted from the database", id);
     }
 
     public List<Subscription> getSubscriptions() {
