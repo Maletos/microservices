@@ -33,10 +33,10 @@ public class SubscriptionControllerTest {
     @BeforeEach
     public void init() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webContext).build();
-        jdbcTemplate.execute("delete from users_schema.users");
-        jdbcTemplate.execute("delete from users_schema.subscriptions");
-        jdbcTemplate.execute("ALTER SEQUENCE users_schema.users_seq RESTART WITH 1");
-        jdbcTemplate.execute("ALTER SEQUENCE users_schema.subs_seq RESTART WITH 1");
+        jdbcTemplate.execute("delete from users");
+        jdbcTemplate.execute("delete from user_subs");
+        jdbcTemplate.execute("ALTER SEQUENCE users_seq RESTART WITH 1");
+        jdbcTemplate.execute("ALTER SEQUENCE subs_seq RESTART WITH 1");
 
         followerUser = new User();
         followerUser.setUserName("MikhailJ");
