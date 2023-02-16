@@ -2,6 +2,7 @@ package com.example.firstservice.controller;
 
 import com.example.firstservice.domain.Subscription;
 import com.example.firstservice.domain.User;
+import com.example.firstservice.repos.UserRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +18,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
@@ -29,14 +31,12 @@ public class SubscriptionControllerTest {
     private MockMvc mockMvc;
     private User followedUser;
     private User followerUser;
+    @Autowired
+    private UserRepo userRepo;
 
     @BeforeEach
     public void init() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webContext).build();
-        jdbcTemplate.execute("delete from users");
-        jdbcTemplate.execute("delete from user_subs");
-        jdbcTemplate.execute("ALTER SEQUENCE users_seq RESTART WITH 1");
-        jdbcTemplate.execute("ALTER SEQUENCE subs_seq RESTART WITH 1");
 
         followerUser = new User();
         followerUser.setUserName("MikhailJ");
@@ -57,9 +57,13 @@ public class SubscriptionControllerTest {
         followedUser.setEmailAddress("dummy_yammy@example.com");
         followedUser.setPhoneNumber("2223344555");
         followedUser.setId(2L);
+
+        jdbcTemplate.execute("ALTER SEQUENCE users_seq RESTART WITH 1");
+        jdbcTemplate.execute("ALTER SEQUENCE subs_seq RESTART WITH 1");
     }
 
     @Test
+    @Transactional
     void subscribeTest() throws Exception{
         createUsers();
         Subscription subs = new Subscription();
@@ -78,6 +82,7 @@ public class SubscriptionControllerTest {
 
 
     @Test
+    @Transactional
     void getSubscriptionByIDTest() throws Exception{
         subscribeTest();
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
@@ -89,13 +94,14 @@ public class SubscriptionControllerTest {
     }
 
     @Test
+    @Transactional
     void deleteSubscriptionByIDTest() throws Exception{
         subscribeTest();
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .delete("/subscription/deleteSubscription/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON));
         resultActions.andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
-                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.equalTo("Subscription with user id: 1 has been deleted from the database")));
+                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.equalTo("Subscription with subs id: 1 has been deleted from the database")));
 
     }
 

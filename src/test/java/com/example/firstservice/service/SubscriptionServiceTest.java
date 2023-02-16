@@ -95,19 +95,11 @@ class SubscriptionServiceTest {
 
         Mockito.when(subsRepo.existsById(deleteSubscription.getId())).thenReturn(true);
         String result = subsService.deleteSubscription(subscription.getId());
-        Assertions.assertEquals("User with user id: 1 has been deleted from the database", result);
+        Assertions.assertEquals("Subscription with subs id: 1 has been deleted from the database", result);
 
         Mockito.when(subsRepo.findById(deleteSubscription.getId())).thenReturn(Optional.of(deleteSubscription));
         Subscription subsFromDb = subsService.getSubscription(user_1.getId());
         Assertions.assertEquals(false, subsFromDb.isActive());
-    }
-
-    @Test
-    void getSubscriptions() {
-    }
-
-    @Test
-    void getSubscriptionsByFollower() {
     }
 
     @Test

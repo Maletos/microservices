@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
@@ -35,11 +36,11 @@ class UserControllerTest extends AbstractTransactionalJUnit4SpringContextTests {
     @BeforeEach
     public void init() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webContext).build();
-        jdbcTemplate.execute("delete from users_schema.users");
         jdbcTemplate.execute("ALTER SEQUENCE users_schema.users_seq RESTART WITH 1");
     }
 
     @Test
+    @Transactional
     void createUser() throws Exception {
         JSONObject request = new JSONObject();
         request.put("userName","VasyaM");
@@ -60,6 +61,7 @@ class UserControllerTest extends AbstractTransactionalJUnit4SpringContextTests {
     }
 
     @Test
+    @Transactional
     void getUser() throws Exception {
         createUser();
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
@@ -71,6 +73,7 @@ class UserControllerTest extends AbstractTransactionalJUnit4SpringContextTests {
     }
 
     @Test
+    @Transactional
     void getUserNegative() throws Exception {
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .get("/user/getUser/{id}", 1)
@@ -80,6 +83,7 @@ class UserControllerTest extends AbstractTransactionalJUnit4SpringContextTests {
     }
 
     @Test
+    @Transactional
     void getUserList() throws Exception {
         createUser();
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
@@ -93,6 +97,7 @@ class UserControllerTest extends AbstractTransactionalJUnit4SpringContextTests {
     }
 
     @Test
+    @Transactional
     void deleteUser() throws Exception {
         createUser();
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
@@ -103,6 +108,7 @@ class UserControllerTest extends AbstractTransactionalJUnit4SpringContextTests {
     }
 
     @Test
+    @Transactional
     void deleteUserNegative() throws Exception {
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .delete("/user/deleteUser/{id}", 1)
@@ -111,6 +117,7 @@ class UserControllerTest extends AbstractTransactionalJUnit4SpringContextTests {
     }
 
     @Test
+    @Transactional
     void updateUser() throws Exception {
         createUser();
         JSONObject request = new JSONObject();
