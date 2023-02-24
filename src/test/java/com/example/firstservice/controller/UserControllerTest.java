@@ -36,7 +36,7 @@ class UserControllerTest extends AbstractTransactionalJUnit4SpringContextTests {
     @BeforeEach
     public void init() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webContext).build();
-        jdbcTemplate.execute("ALTER SEQUENCE users_schema.users_seq RESTART WITH 1");
+        jdbcTemplate.execute("ALTER SEQUENCE users_seq RESTART WITH 1");
     }
 
     @Test
